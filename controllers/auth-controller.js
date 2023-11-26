@@ -2,6 +2,9 @@ import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import { HttpError } from "../helpers/index.js";
 import userSchema from "../schemas/user-schemas.js";
+import jwt from "jsonwebtoken";
+
+const { JWT_SECRET } = process.env;
 
 const signUp = async (req, res, next) => {
   try {
@@ -40,14 +43,33 @@ const signIn = async (req, res, next) => {
     if (!passwordCompare) {
       throw HttpError(401, "Email or password is wrong");
     }
-    const token = "sdffsdfsdsf";
+    const payload = {
+      id: user._id,
+    };
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "23h" });
+    await User.findByIdAndUpdate(user._id, { token });
     res.json({ token });
   } catch (error) {
     next(error);
   }
 };
 
+const signOut = async (req, res, next) => {
+  const { _id } = req.user;
+  await User.findByIdAndUpdate(_id, { token: "" });
+  res.json({
+    message: "Singout success",
+  });
+};
+
+const getCurrent = (req, res) => {
+  const { email } = req.user;
+  res.json({ email });
+};
+
 export default {
   signUp,
   signIn,
+  signOut,
+  getCurrent,
 };
