@@ -67,9 +67,20 @@ const getCurrent = (req, res) => {
   res.json({ email });
 };
 
+const subUpdate = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+    const result = await User.findOneAndUpdate(_id, req.body);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   signUp,
   signIn,
   signOut,
   getCurrent,
+  subUpdate,
 };
