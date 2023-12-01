@@ -10,7 +10,7 @@ const authenticate = async (req, res, next) => {
     return next(HttpError(401, "Authorization header not found"));
   }
   const [bearer, token] = authorization.split(" ");
-  if (bearer !== "Bearer") {
+  if (bearer !== "Bearer" || !token) {
     return next(HttpError(401));
   }
   try {
