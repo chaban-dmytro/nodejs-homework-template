@@ -3,12 +3,23 @@ import User from "../models/User.js";
 import { HttpError } from "../helpers/index.js";
 import userSchema from "../schemas/user-schemas.js";
 import jwt from "jsonwebtoken";
+import fs from "fs/promises";
+import path from "path";
+import gravatar from "gravatar";
 
 const { JWT_SECRET } = process.env;
 
+const posterPath = path.resolve("public", "avatars");
+
 const signUp = async (req, res, next) => {
   try {
+    // const { path: oldPath, filename } = req.file;
+    // const newPath = path.join(posterPath, filename);
+    // await fs.rename(oldPath, newPath);
+    // const avatarUrl = path.join("public", "avatars", filename);
+
     const { email, password } = req.body;
+    const avatarUrl = gravatar.url(`${email}`);
     const user = await User.findOne({ email });
     if (user) {
       throw HttpError(409, "Email in use");
@@ -21,6 +32,7 @@ const signUp = async (req, res, next) => {
     const newUser = await User.create({
       ...req.body,
       password: hashedPassword,
+      avatarUrl: avatarUrl,
     });
     res.status(201).json({ email: newUser.email });
   } catch (error) {
