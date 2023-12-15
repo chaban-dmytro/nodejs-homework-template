@@ -11,6 +11,8 @@ authRouter.post(
   authController.signUp
 );
 authRouter.post("/signin", isEmptyBody, authController.signIn);
+authRouter.post("/verify", isEmptyBody, authController.sendVerify);
+authRouter.get("/verify/:verificationCode", authController.verify);
 authRouter.post("/signout", authenticate, authController.signOut);
 authRouter.get("/current", authenticate, authController.getCurrent);
 authRouter.patch("/subupdate", authenticate, authController.subUpdate);
